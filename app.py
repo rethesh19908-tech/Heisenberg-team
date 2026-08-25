@@ -442,7 +442,17 @@ if uploaded_file is None:
 st.success("CSV uploaded successfully!")
 
 df = pd.read_csv(uploaded_file)
+df = pd.read_csv(uploaded_file)
 
+# Normalize column names: strip whitespace, lowercase, then rename back to expected names
+df.columns = df.columns.str.strip()
+
+required_cols = {"transaction_date", "category", "amount"}
+missing = required_cols - set(df.columns)
+if missing:
+    st.error(f"Your CSV is missing required column(s): {', '.join(missing)}. "
+              f"Found columns: {', '.join(df.columns)}")
+    st.stop()
 with st.expander("Preview uploaded data"):
     st.dataframe(df.head())
 
